@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload 9 Images</title>
+    <style>
+     .image-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+     .image-upload input {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload 9 Images</h1>
+    <div class="image-upload">
+        <input type="file" id="images" accept="image/*" multiple>
+        <button onclick="uploadImages()">Upload</button>
+    </div>
+    <div id="result"></div>
+    <script>
+        async function uploadImages() {
+            const input = document.getElementById('images');
+            const files = input.files;
+            if (files.length!== 9) {
+                alert("Please select exactly 9 images.");
+                return;
+            }
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                // 重命名文件为序号
+                const file = files[i];
+                const newFile = new File([file], `image${i + 1}.${file.name.split('.').pop()}`, { type: file.type });
+                formData.append(`image${i + 1}`, newFile);
+            }
+            formData.append('target_size', '200,200');
+            try {
+                const response = await fetch('http://127.0.0.1:5000/process_images', {
+                    method: 'POST',
+                    body: formData
+                });
+                const processedData = await response.blob();
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(processedData);
+                downloadLink.download = 'processed_image.jpg';
+                downloadLink.textContent = 'Download Processed Image';
+                document.getElementById('result').replaceChildren();
+                document.getElementById('result').appendChild(downloadLink);
+            } catch (error) {
+                console.error('Error uploading images:', error);
+            }
+        }
+    </script>
+</body>
+</html>
