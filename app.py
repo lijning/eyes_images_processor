@@ -55,8 +55,9 @@ def process_images():
         processed_images.append(processed_image)
         os.remove(file_path)
     combined_image = combine_images(processed_images)
-    cv2.imwrite(os.path.join('outputs', 'processed_image.jpg'), combined_image)
-    return send_file('processed_image.jpg', mimetype='image/jpeg')
+    preocessed_image_path = os.path.join('outputs', 'processed_image.jpg')
+    cv2.imwrite(preocessed_image_path, combined_image)
+    return send_file(preocessed_image_path, mimetype='image/jpeg')
 
 
 if __name__ == "__main__":

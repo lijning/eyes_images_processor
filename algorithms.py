@@ -28,8 +28,8 @@ def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int
             left_eye = keypoints['left_eye']
             right_eye = keypoints['right_eye']
 
-            # cv2.circle(image, left_eye, 2, (0, 255, 0), 2)
-            # cv2.circle(image, right_eye, 2, (0, 255, 0), 2)
+            cv2.circle(image, left_eye, 2, (0, 255, 0), 2)
+            cv2.circle(image, right_eye, 2, (0, 255, 0), 2)
 
             # 计算左右眼的中点
             mid_point = ((left_eye[0] + right_eye[0])//2,
