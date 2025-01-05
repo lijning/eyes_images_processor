@@ -18,12 +18,14 @@ def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int
     Tuple[Optional[np.ndarray], int]: 一个元组，第一个元素是裁剪后的图像，如果未检测到人脸或眼睛则为 None；
                                 第二个元素是状态码，0 表示成功，-1 表示未检测到人脸或眼睛。
     """
+    logger.debug(image.shape)
     # 初始化 MTCNN 检测器
     detector = MTCNN()
     # 使用 MTCNN 检测人脸
-    for scale in [0.71, 0.73, 0.75]:
+    for scale in [0.71, 0.73, 0.69, 0.67]:
         result = detector.detect_faces(image, scale_factor=scale)
-        logger.debug(scale, result)
+        logger.debug(scale)
+        logger.debug(result)
         if not result:
             continue
         for face in result:
@@ -57,13 +59,17 @@ def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int
 if __name__ == "__main__":
     # 调用函数
 
-    image = cv2.imread('uploads/2.jpg')
+    image = cv2.imread('uploads/4.jpg')
+    cv2.imshow('Image', image)
+    # 等待用户按键，0 表示无限等待，直到用户按下按键
+    cv2.waitKey(0)
+    # 销毁所有创建的窗口
+    cv2.destroyAllWindows()
+
     croped, _ = detect_face_eyes_mtcnn(image)
 
     result = cv2.resize(croped, (200, 100))
 
     cv2.imshow('Image', result)
-    # 等待用户按键，0 表示无限等待，直到用户按下按键
     cv2.waitKey(0)
-    # 销毁所有创建的窗口
     cv2.destroyAllWindows()
