@@ -1,5 +1,5 @@
-from flask_cors import CORS
-from flask import Flask, request, send_file, send_from_directory
+from flask import request, send_file, send_from_directory
+from application import app
 from werkzeug.utils import secure_filename
 import os
 import cv2
@@ -7,17 +7,13 @@ import numpy as np
 from algorithms import detect_face_eyes_mtcnn
 
 
-app = Flask(__name__)
-cors = CORS(app)
-
-
 def process_image(image_path, target_size=(200, 100)):
     app.logger.info(image_path)
-    app.logger.info(type(image_path))
     image = cv2.imread(image_path)
-    croped, flag = detect_face_eyes_mtcnn(image)
+    croped, status = detect_face_eyes_mtcnn(image)
+    app.logger.info(status)
 
-    if flag >= 0:
+    if croped is not None:
         # 缩放图片到目标大小
         result = cv2.resize(croped, target_size)
         return result

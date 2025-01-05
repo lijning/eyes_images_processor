@@ -4,6 +4,8 @@ import numpy as np
 
 from typing import Optional, Tuple
 
+from application import logger
+
 
 def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int]:
     """
@@ -19,8 +21,11 @@ def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int
     # 初始化 MTCNN 检测器
     detector = MTCNN()
     # 使用 MTCNN 检测人脸
-    result = detector.detect_faces(image)
-    if result:
+    for scale in [0.71, 0.73, 0.75]:
+        result = detector.detect_faces(image, scale_factor=scale)
+        logger.debug(scale, result)
+        if not result:
+            continue
         for face in result:
             # 获取人脸关键点信息
             keypoints = face['keypoints']
@@ -33,7 +38,7 @@ def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int
 
             # 计算左右眼的中点
             mid_point = ((left_eye[0] + right_eye[0])//2,
-                         (left_eye[1] + right_eye[1])//2)
+                            (left_eye[1] + right_eye[1])//2)
             # 计算左右眼之间的距离（曼哈顿距离）
             distance = abs(left_eye[1] - right_eye[1]) + \
                 abs(left_eye[0] - right_eye[0])
@@ -44,15 +49,15 @@ def detect_face_eyes_mtcnn(image: np.ndarray) -> Tuple[Optional[np.ndarray], int
 
             # 裁剪图像
             croped = image[y1:y2, x1:x2]
-            return croped, 0
+            return croped, str(scale) + '_ok'
 
-    return None, -1
+    return None, 'no_results'
 
 
 if __name__ == "__main__":
     # 调用函数
 
-    image = cv2.imread('test.jpg')
+    image = cv2.imread('uploads/2.jpg')
     croped, _ = detect_face_eyes_mtcnn(image)
 
     result = cv2.resize(croped, (200, 100))
